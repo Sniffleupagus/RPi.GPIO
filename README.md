@@ -32,4 +32,4 @@ PWM, events, analog read, ... not implemented
 ## Notes  
 Apps require root (eg 'sudo python testapp.py')  
 When using BCM mode, RPi BCM numbers are passed to GPIO.xxx and translated internally to Bananapi GPIO numbers  
-Compare RPi connector pinout / BCM chart and Amlogic pinout to match RPi BCM with Bananapi pins  
+Compare RPi connector pinout / BCM chart and Bananapi pinout to match RPi BCM with Bananapi pins  
