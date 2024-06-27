@@ -30,7 +30,7 @@ SOFTWARE.
 #include <string.h>
 #include <arpa/inet.h>
 #include "cpuinfo.h"
-#include "aml.h"
+#include "bananapi.h"
 
 int get_rpi_info(rpi_info *info)
 {
@@ -59,23 +59,38 @@ int get_rpi_info(rpi_info *info)
              strcmp(hardware, "BCM2835") == 0 ||
              strcmp(hardware, "BCM2836") == 0 ||
              strcmp(hardware, "BCM2837") == 0 ) {
-            found = 1;
-            aml_found=0;
+             found = 1;
+#ifdef AML_SUPPORT
+             aml_found = 0;
+#endif
+#ifdef SUNXI_SUPPORT
+             sunxi_found = 0;
+#endif
         }
         else {  //Check for Bananapi 
-         if (strstr(hardware, "Bananapi"))
-            sscanf(buffer, "Hardware	: Bananapi %s", hardware);
-         if (strstr(hardware, "BPI-M2S") ||
-             strstr(hardware, "BPI-CM4") ||
-	     strstr(hardware, "BPI-RPICM4") ||
-	     strstr(hardware, "BPI-CM5IO") ||
-	     strstr(hardware, "BPI-CM5-BPICM4IO") ||
-	     strstr(hardware, "BPI-M5") ||
-	     strstr(hardware, "BPI-M2-Pro")) {
+            if (strstr(hardware, "Bananapi"))
+                sscanf(buffer, "Hardware	: Bananapi %s", hardware);
+#ifdef AML_SUPPORT
+            if (strstr(hardware, "BPI-M2S") ||
+                strstr(hardware, "BPI-CM4") ||
+	        strstr(hardware, "BPI-RPICM4") ||
+	        strstr(hardware, "BPI-CM5IO") ||
+	        strstr(hardware, "BPI-CM5-BPICM4IO") ||
+	        strstr(hardware, "BPI-M5") ||
+	        strstr(hardware, "BPI-M2-Pro")) {
                 aml_found = found = 1;
                 setInfoAml(hardware, (void *)info);
             }
+#endif
+#ifdef SUNXI_SUPPORT
+	    if (strstr(hardware, "BPI-M4Berry") ||
+                strstr(hardware, "BPI-M4Zero"))  {
+                sunxi_found = found = 1;
+                setInfoSunxi(hardware, (void *)info);
+            }
+#endif
         }
+
         sscanf(buffer, "Revision	: %s", revision);
       }
    }
@@ -83,10 +98,18 @@ int get_rpi_info(rpi_info *info)
       return -1;
    fclose(fp);
 
+#ifdef AML_SUPPORT
    if (aml_found) {
       strcpy(info->revision, revision);
       return 0;
    }
+#endif
+#ifdef SUNXI_SUPPORT
+   if (sunxi_found) {
+      strcpy(info->revision, revision);
+      return 0;
+   }
+#endif
 
    if (!found)
       return -1;

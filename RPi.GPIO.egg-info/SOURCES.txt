@@ -14,6 +14,8 @@ RPi.GPIO.egg-info/top_level.txt
 RPi/GPIO/__init__.py
 source/aml.c
 source/aml.h
+source/bananapi.c
+source/bananapi.h
 source/c_gpio.c
 source/c_gpio.h
 source/common.c
@@ -29,6 +31,8 @@ source/py_pwm.c
 source/py_pwm.h
 source/soft_pwm.c
 source/soft_pwm.h
+source/sunxi.c
+source/sunxi.h
 test/issue_94_111_154.py
 test/led.py
 test/simplerw.py

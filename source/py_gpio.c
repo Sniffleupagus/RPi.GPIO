@@ -27,7 +27,7 @@ SOFTWARE.
 #include "cpuinfo.h"
 #include "constants.h"
 #include "common.h"
-#include "aml.h"
+#include "bananapi.h"
 
 static PyObject *rpi_revision; // deprecated
 static PyObject *board_info;
@@ -571,15 +571,27 @@ static unsigned int chan_from_gpio(unsigned int gpio)
    int chans;
 
    if (gpio_mode == BCM) {
-      if (strstr(rpiinfo.processor, "AML")) {
-        for (chan=1; chan<41; chan++)
-            if (*(*bcm_to_amlgpio+chan) == gpio)
-                return chan;
-        return -1;
-      }
-      else
-        return gpio;
-   }
+#ifdef AML_SUPPORT
+       if (strstr(rpiinfo.processor, "AML")) {
+           for (chan=1; chan<41; chan++) {
+               if (*(*bcm_to_amlgpio+chan) == gpio)
+                   return chan;
+           }
+           return -1;
+       }
+#endif
+#ifdef SUNXI_SUPPORT
+       if (strstr(rpiinfo.processor, "AW")) {
+           for (chan=1; chan<41; chan++) {
+               if (*(*bcm_to_sunxigpio+chan) == gpio)
+                   return chan;
+           }
+           return -1;
+       }
+#endif
+
+       return gpio;
+    }
 
    if (rpiinfo.p1_revision == 0)   // not applicable for compute module
       return -1;
@@ -1034,9 +1046,9 @@ PyMODINIT_FUNC init_GPIO(void)
 
     if (strstr(rpiinfo.processor, "AML")) {
         setMappingPtrsAml();
-    }
-    else {
-        bcm_to_amlgpio = &bcmToOGpioRPi;  //1:1 mapping
+    } else if (strstr(rpiinfo.processor, "AW")) {
+        setMappingPtrsSunxi();
+    } else {
         if (rpiinfo.p1_revision == 1) {
             pin_to_gpio = &pin_to_gpio_rev1;
         } else if (rpiinfo.p1_revision == 2) {

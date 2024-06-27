@@ -31,7 +31,7 @@ SOFTWARE.
 #include <sys/time.h>
 #include "event_gpio.h"
 #include "common.h"
-#include "aml.h"
+#include "bananapi.h"
 
 const char *stredge[4] = {"none", "rising", "falling", "both"};
 

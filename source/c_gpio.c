@@ -27,7 +27,7 @@ SOFTWARE.
 #include <sys/mman.h>
 #include <string.h>
 #include "c_gpio.h"
-#include "aml.h"
+#include "bananapi.h"
 
 #define BCM2708_PERI_BASE_DEFAULT   0x20000000
 #define BCM2709_PERI_BASE_DEFAULT   0x3f000000
@@ -81,10 +81,18 @@ int setup(void)
 
     // Python init module code calls get_rpi_info before
     // it calls this (in mmap_gpio_mem) so we know aml_found and piModel
+#ifdef AML_SUPPORT
     if (aml_found) {
         wiringPiSetupAml();  //Will exit on fail
         return SETUP_OK;
     }
+#endif
+#ifdef SUNXI_SUPPORT
+    if(sunxi_found) {
+        wiringPiSetupSunxi();  //Will exit on fail
+        return SETUP_OK;
+    }
+#endif
 
     // try /dev/gpiomem first - this does not require root privs
     if ((mem_fd = open("/dev/gpiomem", O_RDWR|O_SYNC)) > 0)
@@ -186,214 +194,289 @@ int setup(void)
 
 void clear_event_detect(int gpio)
 {
-    if (aml_found) return;
-    else {
-        int offset = EVENT_DETECT_OFFSET + (gpio/32);
-        int shift = (gpio%32);
+#ifdef AML_SUPPORT
+    if (aml_found)
+        return;
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found)
+        return;
+#endif
 
-        *(gpio_map+offset) |= (1 << shift);
-        short_wait();
-        *(gpio_map+offset) = 0;
-    }
+    int offset = EVENT_DETECT_OFFSET + (gpio/32);
+    int shift = (gpio%32);
+
+    *(gpio_map+offset) |= (1 << shift);
+    short_wait();
+    *(gpio_map+offset) = 0;
 }
 
 int eventdetected(int gpio)
 {
-    if (aml_found) return 0;
-    else {
-        int offset, value, bit;
+#ifdef AML_SUPPORT
+    if (aml_found)
+        return 0;
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found)
+        return 0;
+#endif
 
-        offset = EVENT_DETECT_OFFSET + (gpio/32);
-        bit = (1 << (gpio%32));
-        value = *(gpio_map+offset) & bit;
-        if (value)
-            clear_event_detect(gpio);
-        return value;
-    }
+    int offset, value, bit;
+
+    offset = EVENT_DETECT_OFFSET + (gpio/32);
+    bit = (1 << (gpio%32));
+    value = *(gpio_map+offset) & bit;
+    if (value)
+        clear_event_detect(gpio);
+    return value;
 }
 
 void set_rising_event(int gpio, int enable)
 {
-    if (aml_found) return;
-    else {
-        int offset = RISING_ED_OFFSET + (gpio/32);
-        int shift = (gpio%32);
+#ifdef AML_SUPPORT
+    if (aml_found)
+        return;
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found)
+        return;
+#endif
 
-        if (enable)
-            *(gpio_map+offset) |= 1 << shift;
-        else
-            *(gpio_map+offset) &= ~(1 << shift);
-        clear_event_detect(gpio);
-    }
+    int offset = RISING_ED_OFFSET + (gpio/32);
+    int shift = (gpio%32);
+
+    if (enable)
+        *(gpio_map+offset) |= 1 << shift;
+    else
+        *(gpio_map+offset) &= ~(1 << shift);
+    clear_event_detect(gpio);
 }
 
 void set_falling_event(int gpio, int enable)
 {
-    if (aml_found) return;
-    else {
-        int offset = FALLING_ED_OFFSET + (gpio/32);
-        int shift = (gpio%32);
+#ifdef AML_SUPPORT
+    if (aml_found)
+        return;
+#endif
+#ifdef SUNXI_SUPPORT 
+    if (sunxi_found)
+        return;
+#endif
 
-        if (enable) {
-            *(gpio_map+offset) |= (1 << shift);
-            *(gpio_map+offset) = (1 << shift);
-        } else {
-            *(gpio_map+offset) &= ~(1 << shift);
-        }
-        clear_event_detect(gpio);
+    int offset = FALLING_ED_OFFSET + (gpio/32);
+    int shift = (gpio%32);
+
+    if (enable) {
+        *(gpio_map+offset) |= (1 << shift);
+        *(gpio_map+offset) = (1 << shift);
+    } else {
+        *(gpio_map+offset) &= ~(1 << shift);
     }
+    clear_event_detect(gpio);
 }
 
 void set_high_event(int gpio, int enable)
 {
-    if (aml_found) return;
-    else {
-        int offset = HIGH_DETECT_OFFSET + (gpio/32);
-        int shift = (gpio%32);
+#ifdef AML_SUPPORT
+    if (aml_found)
+        return;
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found)
+        return;
+#endif
 
-        if (enable)
-            *(gpio_map+offset) |= (1 << shift);
-        else
-            *(gpio_map+offset) &= ~(1 << shift);
-        clear_event_detect(gpio);
-    }
+    int offset = HIGH_DETECT_OFFSET + (gpio/32);
+    int shift = (gpio%32);
+
+    if (enable)
+        *(gpio_map+offset) |= (1 << shift);
+    else
+        *(gpio_map+offset) &= ~(1 << shift);
+    clear_event_detect(gpio);
 }
 
 void set_low_event(int gpio, int enable)
 {
-    if (aml_found) return;
-    else {
+#ifdef AML_SUPPORT
+    if (aml_found)
+        return;
+#endif
+#ifdef SUNXI_SUPPORT 
+    if (sunxi_found)
+        return;
+#endif
 
-        int offset = LOW_DETECT_OFFSET + (gpio/32);
-        int shift = (gpio%32);
+    int offset = LOW_DETECT_OFFSET + (gpio/32);
+    int shift = (gpio%32);
 
-        if (enable)
-            *(gpio_map+offset) |= 1 << shift;
-        else
-            *(gpio_map+offset) &= ~(1 << shift);
-        clear_event_detect(gpio);
-    }
+    if (enable)
+        *(gpio_map+offset) |= 1 << shift;
+    else
+        *(gpio_map+offset) &= ~(1 << shift);
+    clear_event_detect(gpio);
 }
 
 void set_pullupdn(int gpio, int pud)
 {
+#ifdef AML_SUPPORT
     if (aml_found) {
         pullUpDnControlAml(gpio, pud);
-	}
-	else {
-	    // Check GPIO register
-	    int is2711 = *(gpio_map+PULLUPDN_OFFSET_2711_3) != 0x6770696f;
-	    if (is2711) {
-	        // Pi 4 Pull-up/down method
-	        int pullreg = PULLUPDN_OFFSET_2711_0 + (gpio >> 4);
-	        int pullshift = (gpio & 0xf) << 1;
-	        unsigned int pullbits;
-	        unsigned int pull = 0;
-	        switch (pud) {
-	            case PUD_OFF:  pull = 0; break;
-	            case PUD_UP:   pull = 1; break;
-	            case PUD_DOWN: pull = 2; break;
-	            default:       pull = 0; // switch PUD to OFF for other values
-	        }
-	        pullbits = *(gpio_map + pullreg);
-	        pullbits &= ~(3 << pullshift);
-	        pullbits |= (pull << pullshift);
-	        *(gpio_map + pullreg) = pullbits;
-	    } else {
-	        // Legacy Pull-up/down method
-	        int clk_offset = PULLUPDNCLK_OFFSET + (gpio/32);
-	        int shift = (gpio%32);
+	return;
+    }
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found) {
+        pullUpDnControlSunxi(gpio, pud);
+	return;
+    }
+#endif
 
-	        if (pud == PUD_DOWN) {
-	            *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_DOWN;
-	        } else if (pud == PUD_UP) {
-	            *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_UP;
-	        } else  { // pud == PUD_OFF
-	            *(gpio_map+PULLUPDN_OFFSET) &= ~3;
-	        }
-	        short_wait();
-	        *(gpio_map+clk_offset) = 1 << shift;
-	        short_wait();
-	        *(gpio_map+PULLUPDN_OFFSET) &= ~3;
-	        *(gpio_map+clk_offset) = 0;
-	    }
-	}
+    // Check GPIO register
+    int is2711 = *(gpio_map+PULLUPDN_OFFSET_2711_3) != 0x6770696f;
+    if (is2711) {
+        // Pi 4 Pull-up/down method
+        int pullreg = PULLUPDN_OFFSET_2711_0 + (gpio >> 4);
+        int pullshift = (gpio & 0xf) << 1;
+        unsigned int pullbits;
+        unsigned int pull = 0;
+        switch (pud) {
+            case PUD_OFF:  pull = 0; break;
+            case PUD_UP:   pull = 1; break;
+            case PUD_DOWN: pull = 2; break;
+            default:       pull = 0; // switch PUD to OFF for other values
+        }
+        pullbits = *(gpio_map + pullreg);
+        pullbits &= ~(3 << pullshift);
+        pullbits |= (pull << pullshift);
+        *(gpio_map + pullreg) = pullbits;
+    } else {
+        // Legacy Pull-up/down method
+        int clk_offset = PULLUPDNCLK_OFFSET + (gpio/32);
+        int shift = (gpio%32);
+
+        if (pud == PUD_DOWN) {
+            *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_DOWN;
+        } else if (pud == PUD_UP) {
+            *(gpio_map+PULLUPDN_OFFSET) = (*(gpio_map+PULLUPDN_OFFSET) & ~3) | PUD_UP;
+        } else  { // pud == PUD_OFF
+            *(gpio_map+PULLUPDN_OFFSET) &= ~3;
+        }
+        short_wait();
+        *(gpio_map+clk_offset) = 1 << shift;
+        short_wait();
+        *(gpio_map+PULLUPDN_OFFSET) &= ~3;
+        *(gpio_map+clk_offset) = 0;
+    }
 }
 
 void setup_gpio(int gpio, int direction, int pud)
 {
+#ifdef AML_SUPPORT
     if (aml_found) {
         set_pullupdn(gpio, pud);
         pinModeAml (gpio, direction);
+	return;
     }
-    else {
-        int offset = FSEL_OFFSET + (gpio/10);
-        int shift = (gpio%10)*3;
-
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found) {
         set_pullupdn(gpio, pud);
-        if (direction == OUTPUT)
-            *(gpio_map+offset) = (*(gpio_map+offset) & ~(7<<shift)) | (1<<shift);
-        else  // direction == INPUT
-            *(gpio_map+offset) = (*(gpio_map+offset) & ~(7<<shift));
+        pinModeSunxi (gpio, direction);
+	return;
     }
+#endif
+
+    int offset = FSEL_OFFSET + (gpio/10);
+    int shift = (gpio%10)*3;
+
+    set_pullupdn(gpio, pud);
+    if (direction == OUTPUT)
+        *(gpio_map+offset) = (*(gpio_map+offset) & ~(7<<shift)) | (1<<shift);
+    else  // direction == INPUT
+        *(gpio_map+offset) = (*(gpio_map+offset) & ~(7<<shift));
 }
 
 // Contribution by Eric Ptak <trouch@trouch.com>
 int gpio_function(int gpio)
 {
-    if (aml_found) {
+#ifdef AML_SUPPORT
+    if (aml_found)
         return pinGetModeAml(gpio);
-    }
-    else {
-        int offset = FSEL_OFFSET + (gpio/10);
-        int shift = (gpio%10)*3;
-        int value = *(gpio_map+offset);
-        value >>= shift;
-        value &= 7;
-        return value; // 0=input, 1=output, 4=alt0
-    }
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found)
+        return pinGetModeSunxi(gpio);
+#endif
+
+    int offset = FSEL_OFFSET + (gpio/10);
+    int shift = (gpio%10)*3;
+    int value = *(gpio_map+offset);
+    value >>= shift;
+    value &= 7;
+    return value; // 0=input, 1=output, 4=alt0
 }
 
 void output_gpio(int gpio, int value)
 {
+#ifdef AML_SUPPORT
     if (aml_found) {
         digitalWriteAml(gpio, (value) ? HIGH : LOW);
+	return;
     }
-    else {
-        int offset, shift;
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found) {
+        digitalWriteSunxi(gpio, (value) ? HIGH : LOW);
+	return;
+    }
+#endif
 
-        if (value) // value == HIGH
-            offset = SET_OFFSET + (gpio/32);
-        else       // value == LOW
+    int offset, shift;
+
+    if (value) // value == HIGH
+        offset = SET_OFFSET + (gpio/32);
+    else       // value == LOW
         offset = CLR_OFFSET + (gpio/32);
 
-        shift = (gpio%32);
-
-        *(gpio_map+offset) = 1 << shift;
-    }
+    shift = (gpio%32);
+    *(gpio_map+offset) = 1 << shift;
 }
 
 int input_gpio(int gpio)
 {
-    if (aml_found) {
+#ifdef AML_SUPPORT
+    if (aml_found)
         return digitalReadAml(gpio);
-    }
-    else {
-        int offset, value, mask;
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found)
+        return digitalReadSunxi(gpio);
+#endif
 
-        offset = PINLEVEL_OFFSET + (gpio/32);
-        mask = (1 << gpio%32);
-        value = *(gpio_map+offset) & mask;
-        return value;
-    }
+    int offset, value, mask;
+
+    offset = PINLEVEL_OFFSET + (gpio/32);
+    mask = (1 << gpio%32);
+    value = *(gpio_map+offset) & mask;
+    return value;
 }
 
 void cleanup(void)
 {
+#ifdef AML_SUPPORT
     if (aml_found) {
         wiringPiCleanupAml();
+	return;
     }
-    else {
-        munmap((void *)gpio_map, BLOCK_SIZE);
+#endif
+#ifdef SUNXI_SUPPORT
+    if (sunxi_found) {
+        wiringPiCleanupSunxi();
+	return;
     }
+#endif
+
+    munmap((void *)gpio_map, BLOCK_SIZE);
 }
