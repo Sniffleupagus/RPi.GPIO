@@ -41,16 +41,29 @@ int get_rpi_info(rpi_info *info)
    int found = 0;
    int len;
 
-   if ((fp = fopen("/proc/device-tree/system/linux,revision", "r"))) {
-      uint32_t n;
-      if (fread(&n, sizeof(n), 1, fp) != 1) {
-         fclose(fp);
+   /* mainline check */
+   if ((fp = fopen("/proc/device-tree/model", "r"))) {
+      if (fgets(hardware, 32, fp) == NULL)
          return -1;
+
+#ifdef AML_SUPPORT
+      if (strstr(hardware, "BananaPi M2S") ||
+          strstr(hardware, "BananaPi BPI-CM4IO") ||
+          strstr(hardware, "BananaPi RPI-CM4IO") ||
+          strstr(hardware, "Banana Pi BPI-M5") ||
+          strstr(hardware, "Banana Pi BPI-M2-PRO")) {
+          aml_found = found = 1;
       }
-      sprintf(revision, "%x", ntohl(n));
-      found = 1;
+#endif
+#ifdef SUNXI_SUPPORT
+      if (strstr(hardware, "BananaPi M4 Berry") ||
+          strstr(hardware, "BananaPi M4 Zero"))  {
+          sunxi_found = found = 1;
+      }
+#endif
    }
-   else if ((fp = fopen("/proc/cpuinfo", "r"))) {
+
+   if ((fp = fopen("/proc/cpuinfo", "r"))) {
       while(!feof(fp) && fgets(buffer, sizeof(buffer), fp)) {
          sscanf(buffer, "Hardware	: %s", hardware);
          if (strcmp(hardware, "BCM2708") == 0 ||
@@ -79,14 +92,12 @@ int get_rpi_info(rpi_info *info)
 	        strstr(hardware, "BPI-M5") ||
 	        strstr(hardware, "BPI-M2-Pro")) {
                 aml_found = found = 1;
-                setInfoAml(hardware, (void *)info);
             }
 #endif
 #ifdef SUNXI_SUPPORT
 	    if (strstr(hardware, "BPI-M4Berry") ||
                 strstr(hardware, "BPI-M4Zero"))  {
                 sunxi_found = found = 1;
-                setInfoSunxi(hardware, (void *)info);
             }
 #endif
         }
@@ -100,12 +111,14 @@ int get_rpi_info(rpi_info *info)
 
 #ifdef AML_SUPPORT
    if (aml_found) {
+      setInfoAml(hardware, (void *)info);
       strcpy(info->revision, revision);
       return 0;
    }
 #endif
 #ifdef SUNXI_SUPPORT
    if (sunxi_found) {
+      setInfoSunxi(hardware, (void *)info);
       strcpy(info->revision, revision);
       return 0;
    }

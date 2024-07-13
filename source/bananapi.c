@@ -742,7 +742,8 @@ void setInfoAml(char *hardware, void *vinfo)
 {
    rpi_info *info = (rpi_info *)vinfo;
 
-   if (strcmp(hardware, "BPI-M2S") == 0)
+   if ((strcmp(hardware, "BPI-M2S") == 0) ||
+       (strcmp(hardware, "BananaPi M2S") == 0))
     {
         piModel = PI_MODEL_BANANAPIM2S;
         info->type = "BPI-M2S";
@@ -751,7 +752,10 @@ void setInfoAml(char *hardware, void *vinfo)
         info->manufacturer = "Bananapi";
         info->processor = "AMLS922X/AMLA311D";
     }
-    else if ((strcmp(hardware, "BPI-M5") == 0) || (strcmp(hardware, "BPI-M2-Pro") == 0))
+    else if ((strcmp(hardware, "BPI-M5") == 0) ||
+	    (strcmp(hardware, "BPI-M2-Pro") == 0) ||
+		(strcmp(hardware, "Banana Pi BPI-M5") == 0) ||
+		(strcmp(hardware, "Banana Pi BPI-M2-PRO") == 0))
     {
         piModel = PI_MODEL_BANANAPIM5;
         info->type = "BPI-M5";
@@ -760,7 +764,8 @@ void setInfoAml(char *hardware, void *vinfo)
         info->manufacturer = "Bananapi";
         info->processor = "AMLS905X3";
     }
-    else if (strcmp(hardware, "BPI-CM4") == 0)
+    else if ((strcmp(hardware, "BPI-CM4") == 0) ||
+	    (strcmp(hardware, "BananaPi BPI-CM4IO") == 0))
     {
         piModel = PI_MODEL_BANANAPICM4;
         info->type = "BPI-CM4";
@@ -769,7 +774,8 @@ void setInfoAml(char *hardware, void *vinfo)
         info->manufacturer = "Bananapi";
         info->processor = "AMLA311D";
     }
-    else if (strcmp(hardware, "BPI-RPICM4") == 0)
+    else if ((strcmp(hardware, "BPI-RPICM4") == 0) ||
+	    (strcmp(hardware, "BananaPi RPI-CM4IO") == 0))
     {
         piModel = PI_MODEL_BANANAPIRPICM4;
         info->type = "BPI-RPICM4";
@@ -1067,7 +1073,8 @@ void setInfoSunxi(char *hardware, void *vinfo)
 {
    rpi_info *info = (rpi_info *)vinfo;
 
-   if (strcmp(hardware, "BPI-M4Berry") == 0)
+   if ((strcmp(hardware, "BPI-M4Berry") == 0) ||
+       (strcmp(hardware, "BananaPi M4 Berry") == 0))
     {
         piModel = PI_MODEL_BANANAPIM4BERRY;
         info->type = "BPI-M4Berry";
@@ -1076,7 +1083,8 @@ void setInfoSunxi(char *hardware, void *vinfo)
         info->manufacturer = "Bananapi";
         info->processor = "AW SUN50IW9";
     }
-    else if ((strcmp(hardware, "BPI-M4Zero") == 0) )
+    else if ((strcmp(hardware, "BPI-M4Zero") == 0) ||
+	    (strcmp(hardware, "BananaPi M4 Zero") == 0))
     {
         piModel = PI_MODEL_BANANAPIM4ZERO;
         info->type = "BPI-M4Zero";
