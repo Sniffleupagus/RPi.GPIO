@@ -105,8 +105,10 @@ int get_rpi_info(rpi_info *info)
         sscanf(buffer, "Revision	: %s", revision);
       }
    }
-   else
+   else {
+      printf("no board found\n");
       return -1;
+   }
    fclose(fp);
 
 #ifdef AML_SUPPORT

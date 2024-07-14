@@ -742,70 +742,70 @@ void setInfoAml(char *hardware, void *vinfo)
 {
    rpi_info *info = (rpi_info *)vinfo;
 
-   if ((strcmp(hardware, "BPI-M2S") == 0) ||
-       (strcmp(hardware, "BananaPi M2S") == 0))
-    {
+   if (strstr(hardware, "BPI-M2S") ||
+       strstr(hardware, "BananaPi M2S"))
+   {
         piModel = PI_MODEL_BANANAPIM2S;
         info->type = "BPI-M2S";
         info->p1_revision = 3;
         info->ram = "2048M/4096M";
         info->manufacturer = "Bananapi";
         info->processor = "AMLS922X/AMLA311D";
-    }
-    else if ((strcmp(hardware, "BPI-M5") == 0) ||
-	    (strcmp(hardware, "BPI-M2-Pro") == 0) ||
-		(strcmp(hardware, "Banana Pi BPI-M5") == 0) ||
-		(strcmp(hardware, "Banana Pi BPI-M2-PRO") == 0))
-    {
+   }
+   else if (strstr(hardware, "BPI-M5") ||
+        strstr(hardware, "BPI-M2-Pro") ||
+        strstr(hardware, "Banana Pi BPI-M5") ||
+        strstr(hardware, "Banana Pi BPI-M2-PRO"))
+   {
         piModel = PI_MODEL_BANANAPIM5;
         info->type = "BPI-M5";
         info->p1_revision = 3;
         info->ram = "2048M/4096M";
         info->manufacturer = "Bananapi";
         info->processor = "AMLS905X3";
-    }
-    else if ((strcmp(hardware, "BPI-CM4") == 0) ||
-	    (strcmp(hardware, "BananaPi BPI-CM4IO") == 0))
-    {
+   }
+   else if (strstr(hardware, "BPI-CM4") ||
+        strstr(hardware, "BananaPi BPI-CM4IO"))
+   {
         piModel = PI_MODEL_BANANAPICM4;
         info->type = "BPI-CM4";
         info->p1_revision = 3;
         info->ram = "2048M/4096M";
         info->manufacturer = "Bananapi";
         info->processor = "AMLA311D";
-    }
-    else if ((strcmp(hardware, "BPI-RPICM4") == 0) ||
-	    (strcmp(hardware, "BananaPi RPI-CM4IO") == 0))
-    {
+   }
+   else if (strstr(hardware, "BPI-RPICM4") ||
+        strstr(hardware, "BananaPi RPI-CM4IO"))
+   {
         piModel = PI_MODEL_BANANAPIRPICM4;
         info->type = "BPI-RPICM4";
         info->p1_revision = 3;
         info->ram = "2048M/4096M";
         info->manufacturer = "Bananapi";
         info->processor = "AMLA311D";
-    }
-    else if (strcmp(hardware, "BPI-CM5IO") == 0)
-    {
+   }
+   else if (strstr(hardware, "BPI-CM5IO"))
+   {
         piModel = PI_MODEL_BANANAPICM5IO;
         info->type = "BPI-CM5IO";
         info->p1_revision = 3;
         info->ram = "2048M/4096M";
         info->manufacturer = "Bananapi";
         info->processor = "AMLA311D2";
-    }
-    else if(strcmp(hardware, "BPI-CM5-BPICM4IO") == 0)
-    {
+   }
+   else if(strstr(hardware, "BPI-CM5-BPICM4IO"))
+   {
         piModel = PI_MODEL_BANANAPICM5BPICM4IO;
         info->type = "BPI-CM5BPICM4IO";
         info->p1_revision = 3;
         info->ram = "2048M/4096M";
         info->manufacturer = "Bananapi";
         info->processor = "AMLA311D2";
-    } 
-    else
+   } 
+   else
         wiringPiFailure(WPI_FATAL, "setInfoAml: This code should only be called for Bananapi\n");
    
-    return;
+   return;
 }
 
 void setMappingPtrsAml(void)
@@ -1073,28 +1073,28 @@ void setInfoSunxi(char *hardware, void *vinfo)
 {
    rpi_info *info = (rpi_info *)vinfo;
 
-   if ((strcmp(hardware, "BPI-M4Berry") == 0) ||
-       (strcmp(hardware, "BananaPi M4 Berry") == 0))
-    {
-        piModel = PI_MODEL_BANANAPIM4BERRY;
-        info->type = "BPI-M4Berry";
-        info->p1_revision = 1;
-        info->ram = "2048M/4096M";
-        info->manufacturer = "Bananapi";
-        info->processor = "AW SUN50IW9";
-    }
-    else if ((strcmp(hardware, "BPI-M4Zero") == 0) ||
-	    (strcmp(hardware, "BananaPi M4 Zero") == 0))
-    {
-        piModel = PI_MODEL_BANANAPIM4ZERO;
-        info->type = "BPI-M4Zero";
-        info->p1_revision = 3;
-        info->ram = "2048M/4096M";
-        info->manufacturer = "Bananapi";
-        info->processor = "AW SUN50IW9";
-    }
-    else
-        wiringPiFailure(WPI_FATAL, "setInfoSunxi: This code should only be called for Bananapi\n");
+   if (strstr(hardware, "BPI-M4Berry") ||
+       strstr(hardware, "BananaPi M4 Berry"))
+   {
+       piModel = PI_MODEL_BANANAPIM4BERRY;
+       info->type = "BPI-M4Berry";
+       info->p1_revision = 1;
+       info->ram = "2048M/4096M";
+       info->manufacturer = "Bananapi";
+       info->processor = "AW SUN50IW9";
+   }
+   else if (strstr(hardware, "BPI-M4Zero") ||
+       strstr(hardware, "BananaPi M4 Zero"))
+   {
+       piModel = PI_MODEL_BANANAPIM4ZERO;
+       info->type = "BPI-M4Zero";
+       info->p1_revision = 3;
+       info->ram = "2048M/4096M";
+       info->manufacturer = "Bananapi";
+       info->processor = "AW SUN50IW9";
+   }
+   else
+       wiringPiFailure(WPI_FATAL, "setInfoSunxi: This code should only be called for Bananapi\n");
    
     return;
 }
