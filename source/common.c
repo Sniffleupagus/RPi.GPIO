@@ -90,6 +90,8 @@ int get_gpio_number(int channel, unsigned int *gpio)
     }
     else // gpio_mode == BCM
     {
+        *gpio = channel;
+
 #ifdef AML_SUPPORT
         if (aml_found == 1)
             *gpio = *(*bcm_to_amlgpio+channel);
@@ -98,7 +100,6 @@ int get_gpio_number(int channel, unsigned int *gpio)
         if (sunxi_found == 1)
             *gpio = *(*bcm_to_sunxigpio+channel);
 #endif
-        *gpio = channel;
     }
 
     return 0;
