@@ -61,6 +61,12 @@ int get_rpi_info(rpi_info *info)
           sunxi_found = found = 1;
       }
 #endif
+#ifdef SPACEMIT_SUPPORT
+      if (strstr(hardware, "BananaPi BPI-F3") ||
+          strstr(hardware, "k1-x deb1")) {
+          spacemit_found = found = 1;
+      }
+#endif
    }
 
    if ((fp = fopen("/proc/cpuinfo", "r"))) {
@@ -78,6 +84,9 @@ int get_rpi_info(rpi_info *info)
 #endif
 #ifdef SUNXI_SUPPORT
              sunxi_found = 0;
+#endif
+#ifdef SPACEMIT_SUPPORT
+	     spacemit_found = 0;
 #endif
         }
         else {  //Check for Bananapi 
@@ -98,6 +107,12 @@ int get_rpi_info(rpi_info *info)
 	    if (strstr(hardware, "BPI-M4Berry") ||
                 strstr(hardware, "BPI-M4Zero"))  {
                 sunxi_found = found = 1;
+            }
+#endif
+#ifdef SPACEMIT_SUPPORT
+            if (strstr(hardware, "BPI-F3") ||
+	        strstr(hardware, "k1-x deb1"))  {
+                spacemit_found = found = 1;
             }
 #endif
         }
@@ -121,6 +136,13 @@ int get_rpi_info(rpi_info *info)
 #ifdef SUNXI_SUPPORT
    if (sunxi_found) {
       setInfoSunxi(hardware, (void *)info);
+      strcpy(info->revision, revision);
+      return 0;
+   }
+#endif
+#ifdef SPACEMIT_SUPPORT
+   if (spacemit_found) {
+      setInfoSpacemit(hardware, (void *)info);
       strcpy(info->revision, revision);
       return 0;
    }

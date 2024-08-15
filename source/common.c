@@ -100,6 +100,10 @@ int get_gpio_number(int channel, unsigned int *gpio)
         if (sunxi_found == 1)
             *gpio = *(*bcm_to_sunxigpio+channel);
 #endif
+#ifdef SPACEMIT_SUPPORT
+        if (spacemit_found == 1)
+            *gpio = *(*bcm_to_spacemitgpio+channel);
+#endif
     }
 
     return 0;

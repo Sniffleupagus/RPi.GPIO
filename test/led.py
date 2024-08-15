@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO  
 import time  
-  
+import sys
+
 bcmledpin = 27    # pin13, bcm27
 phyledpin = 13    # pin13, bcm27
 

@@ -1,7 +1,7 @@
 
 # RPi.GPIO  
   
-RPi.GPIO port with support for Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z
+RPi.GPIO port with support for Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z/F3
   
 
 ## Based on:  
@@ -9,7 +9,7 @@ RPi.GPIO port with support for Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z
 RPi.GPIO by Ben Croston  
   https://sourceforge.net/projects/raspberry-gpio-python/  
 
-Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z WiringPi port  
+Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z/F3 WiringPi port  
   https://github.com/Dangku/WiringPi  
 
 ## License  
@@ -18,7 +18,7 @@ contains code from both projects, it is licensed under the slightly more restric
   
   
 ## Status  
-Working for simple IO on Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z
+Working for simple IO on Bananapi M5/M2Pro/M2S/CM4/CM5IO/M4B/M4Z/F3
 PWM, events, analog read, ... not implemented  
   
   

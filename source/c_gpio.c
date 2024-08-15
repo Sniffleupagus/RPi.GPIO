@@ -93,6 +93,12 @@ int setup(void)
         return SETUP_OK;
     }
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if(spacemit_found) {
+        wiringPiSetupSpacemit();  //Will exit on fail
+        return SETUP_OK;
+    }
+#endif
 
     // try /dev/gpiomem first - this does not require root privs
     if ((mem_fd = open("/dev/gpiomem", O_RDWR|O_SYNC)) > 0)
@@ -202,6 +208,10 @@ void clear_event_detect(int gpio)
     if (sunxi_found)
         return;
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
+        return;
+#endif
 
     int offset = EVENT_DETECT_OFFSET + (gpio/32);
     int shift = (gpio%32);
@@ -219,6 +229,10 @@ int eventdetected(int gpio)
 #endif
 #ifdef SUNXI_SUPPORT
     if (sunxi_found)
+        return 0;
+#endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
         return 0;
 #endif
 
@@ -242,6 +256,10 @@ void set_rising_event(int gpio, int enable)
     if (sunxi_found)
         return;
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
+        return;
+#endif
 
     int offset = RISING_ED_OFFSET + (gpio/32);
     int shift = (gpio%32);
@@ -261,6 +279,10 @@ void set_falling_event(int gpio, int enable)
 #endif
 #ifdef SUNXI_SUPPORT 
     if (sunxi_found)
+        return;
+#endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
         return;
 #endif
 
@@ -286,6 +308,10 @@ void set_high_event(int gpio, int enable)
     if (sunxi_found)
         return;
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
+        return;
+#endif
 
     int offset = HIGH_DETECT_OFFSET + (gpio/32);
     int shift = (gpio%32);
@@ -305,6 +331,10 @@ void set_low_event(int gpio, int enable)
 #endif
 #ifdef SUNXI_SUPPORT 
     if (sunxi_found)
+        return;
+#endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
         return;
 #endif
 
@@ -330,6 +360,12 @@ void set_pullupdn(int gpio, int pud)
     if (sunxi_found) {
         pullUpDnControlSunxi(gpio, pud);
 	return;
+    }
+#endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found) {
+        pullUpDnControlSpacemit(gpio, pud);
+        return;
     }
 #endif
 
@@ -387,6 +423,13 @@ void setup_gpio(int gpio, int direction, int pud)
 	return;
     }
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found) {
+        set_pullupdn(gpio, pud);
+        pinModeSpacemit (gpio, direction);
+        return;
+    }
+#endif
 
     int offset = FSEL_OFFSET + (gpio/10);
     int shift = (gpio%10)*3;
@@ -408,6 +451,10 @@ int gpio_function(int gpio)
 #ifdef SUNXI_SUPPORT
     if (sunxi_found)
         return pinGetModeSunxi(gpio);
+#endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
+        return pinGetModeSpacemit(gpio);
 #endif
 
     int offset = FSEL_OFFSET + (gpio/10);
@@ -432,6 +479,12 @@ void output_gpio(int gpio, int value)
 	return;
     }
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found) {
+        digitalWriteSpacemit(gpio, (value) ? HIGH : LOW);
+        return;
+    }
+#endif
 
     int offset, shift;
 
@@ -454,6 +507,10 @@ int input_gpio(int gpio)
     if (sunxi_found)
         return digitalReadSunxi(gpio);
 #endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found)
+        return digitalReadSpacemit(gpio);
+#endif
 
     int offset, value, mask;
 
@@ -475,6 +532,12 @@ void cleanup(void)
     if (sunxi_found) {
         wiringPiCleanupSunxi();
 	return;
+    }
+#endif
+#ifdef SPACEMIT_SUPPORT
+    if (spacemit_found) {
+        wiringPiCleanupSpacemit();
+        return;
     }
 #endif
 

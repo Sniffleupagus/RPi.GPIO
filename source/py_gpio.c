@@ -589,6 +589,15 @@ static unsigned int chan_from_gpio(unsigned int gpio)
            return -1;
        }
 #endif
+#ifdef SPACEMIT_SUPPORT
+       if (strstr(rpiinfo.processor, "SPACEMIT")) {
+           for (chan=1; chan<41; chan++) {
+               if (*(*bcm_to_spacemitgpio+chan) == gpio)
+                   return chan;
+           }
+           return -1;
+       }
+#endif
 
        return gpio;
     }
@@ -1048,6 +1057,8 @@ PyMODINIT_FUNC init_GPIO(void)
         setMappingPtrsAml();
     } else if (strstr(rpiinfo.processor, "AW")) {
         setMappingPtrsSunxi();
+    } else if (strstr(rpiinfo.processor, "SPACEMIT")) {
+	setMappingPtrsSpacemit();
     } else {
         if (rpiinfo.p1_revision == 1) {
             pin_to_gpio = &pin_to_gpio_rev1;
