@@ -19,7 +19,8 @@
 #define	PI_MODEL_BANANAPICM5BPICM4IO	11
 #define	PI_MODEL_BANANAPIM4BERRY	12
 #define	PI_MODEL_BANANAPIM4ZERO		13
-#define	PI_MODEL_BANANAPIF3		14
+#define	PI_MODEL_BANANAPIM4ZERO_V2	14
+#define	PI_MODEL_BANANAPIF3		15
 
 #define AML_SUPPORT
 #define SUNXI_SUPPORT
@@ -758,7 +759,71 @@ static const int physToGpioBananapiM4Berry[64] = {
 	-1, -1, -1, -1, -1, -1, -1	// 57...63
 };
 
-static const int pinToGpioBananapiM4Zero[64] = {
+static const int pinToGpioBananapiM4Zero[64] = {   // for original boards with realtek wifi
+	// wiringPi number to native gpio number
+	226,   192+11,	//  0 |  1 : PH2, PG11/PI1
+	227,   192+2,	//  2 |  3 : PH3, PG2/PI11
+	192+8,   192+9,	//  4 |  5 : PG8/PI15, PG9/PI16
+	192+1, 192+19,	//  6 |  7 : PG1/PC2, PG19/PI12(PWM2)
+	192+16, 192+15,	//  8 |  9 : PG16/PI6(I2C0_SDA), PG15/PI5(I2C0_SCL)
+	229,    233,	// 10 | 11 : PH5(SPI1_SS), PH9
+	231,    232,	// 12 | 13 : PH7(SPI1_MOSI), PH8(SPI1_MISO)
+	230,    192+6,	// 14 | 15 : PH6(SPI1_CLK), PG6/PI13(UART4_TX)
+	192+7  -1,	// 16 | 17 : PG7/PI14(UART4_RX),
+	 -1,   -1,	// 18 | 19 :
+	 -1, 192+3,	// 20 | 21 : , PG3/PI10
+	192+4, 192+5,	// 22 | 23 : PG4/PI9, PG5/PH10
+	192+12, 192+10,	// 24 | 25 : PG12/PI2, PG10/PI0
+	192+0, 224+4,	// 26 | 27 : PG0/PH4, PH4/PC7
+	192+14, 192+13,	// 28 | 29 : PG14/PI4, PG13/PI3
+	192+18, 192+17,	// 30 | 31 : PG18/PI8(I2C1_SDA), PG17/PI7(I2C1_SCL)
+	// Padding:
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 32...47
+	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 48...63
+};
+
+const int bcmToOGpioBananapiM4Zero[64] = {       	      // BCM ModE
+     -1,  -1, 192+16, 192+15, 192+19, 192+3, 192+4, 233,      // 0..7
+     229, 232, 231, 230, 228, 192+5, 192+6, 192+7         ,      // 8..15
+    224+4, 226, 192+11, 192+12, 192+14, 192+13, 192+2, 192+8, // 16..23
+    192+9, 192+1, 192+19, 227,  -1,  -1,  -1,  -1, // 24..31
+// Padding:
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 32..39
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 40..47
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, // 48..55
+     -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1  // 56..63
+};
+
+static const int physToGpioBananapiM4Zero[64] = {
+	// physical header pin number to native gpio number
+	 -1,		//  0
+	 -1,   -1,	//  1 |  2 : 3.3V, 5.0V
+	192+16,   -1,	//  3 |  4 : PG16(I2C4_SDA), 5.0V
+	192+15,   -1,	//  5 |  6 : PG15(I2C4_SCL), GND
+	192+19, 192+6,	//  7 |  8 : PG19, PG6(UART1_TX)
+	 -1,    192+7,	//  9 | 10 : GND(PWM1), PG7(UAR1_RX)
+	226,    192+11,	// 11 | 12 : PH2, PG11
+	227,   -1,	// 13 | 14 : PH3, GND
+	192+2,  192+8,	// 15 | 16 : PG2, PG8
+	 -1,    192+9,	// 17 | 18 : 3.3V, PG9
+	231,   -1,	// 19 | 20 : PH7(SPI1_MOSI), GND
+	232,    192+1,	// 21 | 22 : PH8(SPI1_MISO), PG1
+	230,    229,	// 23 | 24 : PH6(SPI1_CLK), PH5(SPI1_SS)
+	 -1,    233,	// 25 | 26 : GND, PH9
+	192+18, 192+17,	// 27 | 28 : PG18(I2C3_SDA), PG17(I2C3_SCL)
+        192+3,  -1,	// 29 | 30 : PG3, GND
+	192+4,  192+0,	// 31 | 32 : PG4, PG0
+	192+5,  -1,	// 33 | 34 : PG5, GND
+	192+12, 224+4,	// 35 | 36 : PG12, PH4
+	192+10, 192+14,	// 37 | 38 : PG10, PG14
+	 -1,    192+13,	// 39 | 40 : GND, PG13
+	// Not used
+	-1, -1, -1, -1, -1, -1, -1, -1,	// 41...48
+	-1, -1, -1, -1, -1, -1, -1, -1,	// 49...56
+	-1, -1, -1, -1, -1, -1, -1	// 57...63
+};
+
+static const int pinToGpioBananapiM4ZeroV2[64] = { // bananapi m4zero V2 with broadcom wifi
 	// wiringPi number to native gpio number
 	226, 257,	//  0 |  1 : PH2, PI1
 	227, 267,	//  2 |  3 : PH3, PI11
@@ -771,7 +836,7 @@ static const int pinToGpioBananapiM4Zero[64] = {
 	270,  -1,	// 16 | 17 : PI14(UART4_RX),
 	 -1,  -1,	// 18 | 19 :
 	 -1, 266,	// 20 | 21 : , PI10
-	265, 234,	// 22 | 23 : PI9, PH10
+	265, 234,	// 22 | 23 : PI9, PG5/PH10
 	258, 256,	// 24 | 25 : PI2, PI0
 	228,  71,	// 26 | 27 : PH4, PC7
 	260, 259,	// 28 | 29 : PI4, PI3
@@ -781,8 +846,8 @@ static const int pinToGpioBananapiM4Zero[64] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,	// 48...63
 };
 
-const int bcmToOGpioBananapiM4Zero[64] = {	// BCM ModE
-     -1,  -1, 262, 261, 268, 266, 265, 233, // 0..7
+const int bcmToOGpioBananapiM4ZeroV2[64] = {	// BCM ModE
+     -1,  -1, 262, 261, 192+19, 192+6, 192+4, 233, // 0..7
     229, 232, 231, 230, 228, 234, 269, 270, // 8..15
     71, 226, 257, 258, 260, 259, 267, 271, // 16..23
     272, 66, 256, 227,  -1,  -1,  -1,  -1, // 24..31
@@ -793,34 +858,35 @@ const int bcmToOGpioBananapiM4Zero[64] = {	// BCM ModE
      -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1  // 56..63
 };
 
-static const int physToGpioBananapiM4Zero[64] = {
+static const int physToGpioBananapiM4ZeroV2[64] = {
 	// physical header pin number to native gpio number
 	 -1,		//  0
 	 -1,  -1,	//  1 |  2 : 3.3V, 5.0V
-	262,  -1,	//  3 |  4 : PG16(I2C4_SDA), 5.0V
-	261,  -1,	//  5 |  6 : PG15(I2C4_SCL), GND
-	268, 269,	//  7 |  8 : PG19, PG6(UART1_TX)
-	 -1, 270,	//  9 | 10 : GND(PWM1), PG7(UAR1_RX)
-	226, 257,	// 11 | 12 : PH2, PG11
+	262,  -1,	//  3 |  4 : PG16/PI6(I2C4_SDA), 5.0V
+	261,  -1,	//  5 |  6 : PG15/PI5(I2C4_SCL), GND
+	268, 269,	//  7 |  8 : PG19/PI12, PG6/PI13(UART1_TX)
+	 -1, 270,	//  9 | 10 : GND(PWM1), PG7/PI14(UAR1_RX)
+	226, 257,	// 11 | 12 : PH2, PG11/PI1
 	227,  -1,	// 13 | 14 : PH3, GND
-	267, 271,	// 15 | 16 : PG2, PG8
-	 -1, 272,	// 17 | 18 : 3.3V, PG9
+	267, 271,	// 15 | 16 : PG2/PH11, PG8/PI15
+	 -1, 272,	// 17 | 18 : 3.3V, PG9/PI16
 	231,  -1,	// 19 | 20 : PH7(SPI1_MOSI), GND
-	232,  66,	// 21 | 22 : PH8(SPI1_MISO), PG1
+	232,  66,	// 21 | 22 : PH8(SPI1_MISO), PG1/PC2
 	230, 229,	// 23 | 24 : PH6(SPI1_CLK), PH5(SPI1_SS)
 	 -1, 233,	// 25 | 26 : GND, PH9
-	264, 263,	// 27 | 28 : PG18(I2C3_SDA), PG17(I2C3_SCL)
-	266,  -1,	// 29 | 30 : PG3, GND
-	265, 228,	// 31 | 32 : PG4, PG0
-	234,  -1,	// 33 | 34 : PG5, GND
-	258,  71,	// 35 | 36 : PG12, PH4
-	256, 260,	// 37 | 38 : PG19, PG14
-	 -1, 259,	// 39 | 40 : GND, PG13
+	264, 263,	// 27 | 28 : PG18/PI8(I2C3_SDA), PG17/PI7(I2C3_SCL)
+	266,  -1,	// 29 | 30 : PG3/PI10, GND
+	265, 228,	// 31 | 32 : PG4/PI9, PG0/PH4
+	234,  -1,	// 33 | 34 : PG5/PH10, GND
+	258,  71,	// 35 | 36 : PG12/PI2, PH4/PC7
+	256, 260,	// 37 | 38 : PG10/PI0, PG14/PI4
+	 -1, 259,	// 39 | 40 : GND, PG13/PI3
 	// Not used
 	-1, -1, -1, -1, -1, -1, -1, -1,	// 41...48
 	-1, -1, -1, -1, -1, -1, -1, -1,	// 49...56
 	-1, -1, -1, -1, -1, -1, -1	// 57...63
 };
+
 #endif /* end SUNXI_SUPPORT */
 
 /* =======================================================================================
@@ -994,6 +1060,8 @@ extern const int physToGpioBananapiM4Berry[64];
 extern const int bcmToOGpioBananapiM4Berry[64];
 extern const int physToGpioBananapiM4Zero[64];
 extern const int bcmToOGpioBananapiM4Zero[64];
+extern const int physToGpioBananapiM4ZeroV2[64];
+extern const int bcmToOGpioBananapiM4ZeroV2[64];
 
 int wiringPiSetupSunxi (void);
 void wiringPiCleanupSunxi (void);

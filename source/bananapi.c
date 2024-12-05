@@ -870,7 +870,7 @@ int wiringPiSetupSunxi (void)
     }
 
 
-    if (piModel == PI_MODEL_BANANAPIM4BERRY || piModel == PI_MODEL_BANANAPIM4ZERO) {
+    if (piModel == PI_MODEL_BANANAPIM4BERRY || piModel == PI_MODEL_BANANAPIM4ZERO || piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
         sunxi_gpio = (uint32_t *)mmap(0, BLOCK_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, SUNXI_GPIO_BASE);
         if (sunxi_gpio == MAP_FAILED)
             return wiringPiFailure(WPI_ALMOST, "wiringPiSetupSunxi: mmap (GPIO) failed: %s\n", strerror(errno));
@@ -905,7 +905,8 @@ void pinModeSunxi (int pin, int mode)
     if (mode == INPUT)
     {
         if (piModel == PI_MODEL_BANANAPIM4BERRY||
-            piModel == PI_MODEL_BANANAPIM4ZERO) {
+            piModel == PI_MODEL_BANANAPIM4ZERO ||
+            piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
             *(sunxi_gpio + mmap_seek) &= ~(7 << offset);
         }
         else
@@ -914,7 +915,8 @@ void pinModeSunxi (int pin, int mode)
     else if (mode == OUTPUT)
     {
         if (piModel == PI_MODEL_BANANAPIM4BERRY||
-            piModel == PI_MODEL_BANANAPIM4ZERO) {
+            piModel == PI_MODEL_BANANAPIM4ZERO ||
+            piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
             *(sunxi_gpio + mmap_seek) &= ~(7 << offset);
             *(sunxi_gpio + mmap_seek) |=  (1 << offset);
         }
@@ -958,7 +960,8 @@ void pullUpDnControlSunxi (int pin, int pud)
     }
 
     if (piModel == PI_MODEL_BANANAPIM4BERRY||
-            piModel == PI_MODEL_BANANAPIM4ZERO) {
+            piModel == PI_MODEL_BANANAPIM4ZERO ||
+            piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
         *(sunxi_gpio + mmap_seek) &= ~(3 << offset);
         *(sunxi_gpio + mmap_seek) |= (bit_value & 3) << offset;
     }
@@ -981,7 +984,8 @@ int digitalReadSunxi (int pin)
     mmap_seek = phyaddr >> 2;
 
     if (piModel == PI_MODEL_BANANAPIM4BERRY||
-            piModel == PI_MODEL_BANANAPIM4ZERO) {
+            piModel == PI_MODEL_BANANAPIM4ZERO ||
+            piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
         if (*(sunxi_gpio + mmap_seek) & (1 << index))
             retval = HIGH;
         else
@@ -1009,7 +1013,8 @@ void digitalWriteSunxi (int pin, int value)
 
 
     if (piModel == PI_MODEL_BANANAPIM4BERRY||
-            piModel == PI_MODEL_BANANAPIM4ZERO) {
+            piModel == PI_MODEL_BANANAPIM4ZERO ||
+            piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
         if (value == LOW)
             *(sunxi_gpio + mmap_seek) &= ~(1 << index);
         else
@@ -1060,7 +1065,8 @@ int pinGetModeSunxi (int pin)
     mmap_seek = phyaddr >> 2;
 
     if (piModel == PI_MODEL_BANANAPIM4BERRY||
-            piModel == PI_MODEL_BANANAPIM4ZERO) {
+            piModel == PI_MODEL_BANANAPIM4ZERO ||
+            piModel == PI_MODEL_BANANAPIM4ZERO_V2) {
             retval = (*(sunxi_gpio + mmap_seek) >> offset) & 7;
     }
     else
@@ -1083,8 +1089,18 @@ void setInfoSunxi(char *hardware, void *vinfo)
        info->manufacturer = "Bananapi";
        info->processor = "AW SUN50IW9";
    }
+   else if (strstr(hardware, "BananaPi BPI-M4-Zero v2"))
+   {
+       piModel = PI_MODEL_BANANAPIM4ZERO_V2;
+       info->type = "BPI-M4Zero V2";
+       info->p1_revision = 3;
+       info->ram = "2048M/4096M";
+       info->manufacturer = "Bananapi";
+       info->processor = "AW SUN50IW9";
+   }
    else if (strstr(hardware, "BPI-M4Zero") ||
-       strstr(hardware, "BananaPi M4 Zero"))
+	    strstr(hardware, "BananaPi BPI-M4-Zero") ||
+	    strstr(hardware, "BananaPi M4 Zero"))
    {
        piModel = PI_MODEL_BANANAPIM4ZERO;
        info->type = "BPI-M4Zero";
@@ -1094,7 +1110,7 @@ void setInfoSunxi(char *hardware, void *vinfo)
        info->processor = "AW SUN50IW9";
    }
    else
-       wiringPiFailure(WPI_FATAL, "setInfoSunxi: This code should only be called for Bananapi\n");
+     wiringPiFailure(WPI_FATAL, "setInfoSunxi: This code should only be called for Bananapi (not %s)\n", hardware);
    
     return;
 }
@@ -1110,6 +1126,11 @@ void setMappingPtrsSunxi(void)
     {
         pin_to_gpio = (const int(*)[41]) & physToGpioBananapiM4Zero;
         bcm_to_sunxigpio = &bcmToOGpioBananapiM4Zero;
+    }
+    else if (piModel == PI_MODEL_BANANAPIM4ZERO_V2)
+    {
+        pin_to_gpio = (const int(*)[41]) & physToGpioBananapiM4ZeroV2;
+        bcm_to_sunxigpio = &bcmToOGpioBananapiM4ZeroV2;
     }
 }
 #endif /* end SUNXI_SUPPORT */

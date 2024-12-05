@@ -56,8 +56,10 @@ int get_rpi_info(rpi_info *info)
       }
 #endif
 #ifdef SUNXI_SUPPORT
+      printf("Looking for banana: %s\n", hardware);
       if (strstr(hardware, "BananaPi M4 Berry") ||
-          strstr(hardware, "BananaPi M4 Zero"))  {
+          strstr(hardware, "BananaPi BPI-M4-Zero")  ||
+          strstr(hardware, "BananaPi BPI-M4-Zero v2"))  {
           sunxi_found = found = 1;
       }
 #endif
